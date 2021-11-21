@@ -3,10 +3,13 @@
 namespace App\Entity;
 
 use App\Repository\PicturesRepository;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=PicturesRepository::class)
+ * @ApiResource()
  */
 class Pictures
 {

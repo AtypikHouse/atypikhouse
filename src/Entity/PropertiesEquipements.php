@@ -3,10 +3,13 @@
 namespace App\Entity;
 
 use App\Repository\PropertiesEquipementsRepository;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=PropertiesEquipementsRepository::class)
+ * @ApiResource()
  */
 class PropertiesEquipements
 {
@@ -19,6 +22,13 @@ class PropertiesEquipements
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\Length(
+     *  min=2,
+     *  minMessage="comment.too_short",
+     *  max="1000",
+     *  maxMessage="comment.too_long"
+     * )
+     * 
      */
     private $value;
 

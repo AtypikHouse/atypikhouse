@@ -3,10 +3,13 @@
 namespace App\Entity;
 
 use App\Repository\MessagesRepository;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=MessagesRepository::class)
+ * @ApiResource()
  */
 class Messages
 {
@@ -32,7 +35,6 @@ class Messages
      * @ORM\JoinColumn(nullable=false)
      */
     private $conversations_idConversations;
-
 
     public function getId(): ?int
     {

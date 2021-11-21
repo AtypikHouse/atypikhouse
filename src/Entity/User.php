@@ -6,12 +6,17 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @ORM\Table(name="`user`")
+ * @ApiResource()
+ * @UniqueEntity(fields={"email"}, message="There is already an account with this email")
  */
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -24,6 +29,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
+     * @Assert\Email(
+     *     message = "The email '{{ value }}' is not a valid email."
+     * )
      */
     private $email;
 
@@ -40,11 +48,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\Length(
+     *  min=2,
+     *  minMessage="firstName.too_short",
+     *  max="50",
+     *  maxMessage="firstName.too_long"
+     * )
      */
     private $firstName;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\Length(
+     *  min=2,
+     *  minMessage="lastName.too_short",
+     *  max="50",
+     *  maxMessage="lastName.too_long"
+     * )
      */
     private $lastName;
 
@@ -55,39 +75,33 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\Column(type="string", length=45)
+     * @Assert\Length(
+     *  min=2,
+     *  minMessage="sexe.too_short",
+     *  max="50",
+     *  maxMessage="sexe.too_long"
+     * )
      */
     private $sexe;
 
     /**
      * @ORM\Column(type="string", length=45)
+     * @Assert\Length(
+     *  min=10,
+     *  minMessage="phone.too_short",
+     *  max="10",
+     *  maxMessage="phone.too_long"
+     * )
      */
     private $phone;
 
     /**
-     * @ORM\Column(type="datetime_immutable")
+     * @ORM\Column(type="boolean")
      */
-    private $signUpAt;
-
-    /**
-     * @ORM\OneToMany(targetEntity=Reservations::class, mappedBy="tenant_idUser")
-     */
-    private $reservations;
-
-    /**
-     * @ORM\OneToMany(targetEntity=Properties::class, mappedBy="owner_idUser")
-     */
-    private $properties;
-
-    /**
-     * @ORM\OneToMany(targetEntity=Conversations::class, mappedBy="user_idUser")
-     */
-    private $conversations;
+    private $isVerified = false;
 
     public function __construct()
     {
-        $this->reservations = new ArrayCollection();
-        $this->properties = new ArrayCollection();
-        $this->conversations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -239,104 +253,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getSignUpAt(): ?\DateTimeImmutable
+
+    public function isVerified(): bool
     {
-        return $this->signUpAt;
+        return $this->isVerified;
     }
 
-    public function setSignUpAt(\DateTimeImmutable $signUpAt): self
+    public function setIsVerified(bool $isVerified): self
     {
-        $this->signUpAt = $signUpAt;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Reservations[]
-     */
-    public function getReservations(): Collection
-    {
-        return $this->reservations;
-    }
-
-    public function addReservation(Reservations $reservation): self
-    {
-        if (!$this->reservations->contains($reservation)) {
-            $this->reservations[] = $reservation;
-            $reservation->setTenantIdUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeReservation(Reservations $reservation): self
-    {
-        if ($this->reservations->removeElement($reservation)) {
-            // set the owning side to null (unless already changed)
-            if ($reservation->getTenantIdUser() === $this) {
-                $reservation->setTenantIdUser(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Properties[]
-     */
-    public function getProperties(): Collection
-    {
-        return $this->properties;
-    }
-
-    public function addProperty(Properties $property): self
-    {
-        if (!$this->properties->contains($property)) {
-            $this->properties[] = $property;
-            $property->setOwnerIdUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeProperty(Properties $property): self
-    {
-        if ($this->properties->removeElement($property)) {
-            // set the owning side to null (unless already changed)
-            if ($property->getOwnerIdUser() === $this) {
-                $property->setOwnerIdUser(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Conversations[]
-     */
-    public function getConversations(): Collection
-    {
-        return $this->conversations;
-    }
-
-    public function addConversation(Conversations $conversation): self
-    {
-        if (!$this->conversations->contains($conversation)) {
-            $this->conversations[] = $conversation;
-            $conversation->setUserIdUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeConversation(Conversations $conversation): self
-    {
-        if ($this->conversations->removeElement($conversation)) {
-            // set the owning side to null (unless already changed)
-            if ($conversation->getUserIdUser() === $this) {
-                $conversation->setUserIdUser(null);
-            }
-        }
+        $this->isVerified = $isVerified;
 
         return $this;
     }

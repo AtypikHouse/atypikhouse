@@ -5,10 +5,13 @@ namespace App\Entity;
 use App\Repository\ConversationsRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Core\Annotation\ApiResource;
 
 /**
  * @ORM\Entity(repositoryClass=ConversationsRepository::class)
+ * @ApiResource()
  */
 class Conversations
 {
@@ -25,11 +28,6 @@ class Conversations
     private $conversationsCol;
 
     /**
-     * @ORM\OneToMany(targetEntity=Messages::class, mappedBy="conversations_idConversations")
-     */
-    private $messages;
-
-    /**
      * @ORM\ManyToOne(targetEntity=Properties::class, inversedBy="conversations")
      */
     private $biens_idProperties;
@@ -41,7 +39,6 @@ class Conversations
 
     public function __construct()
     {
-        $this->messages = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -57,36 +54,6 @@ class Conversations
     public function setConversationsCol(string $conversationsCol): self
     {
         $this->conversationsCol = $conversationsCol;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Messages[]
-     */
-    public function getMessages(): Collection
-    {
-        return $this->messages;
-    }
-
-    public function addMessage(Messages $message): self
-    {
-        if (!$this->messages->contains($message)) {
-            $this->messages[] = $message;
-            $message->setConversationsIdConversations($this);
-        }
-
-        return $this;
-    }
-
-    public function removeMessage(Messages $message): self
-    {
-        if ($this->messages->removeElement($message)) {
-            // set the owning side to null (unless already changed)
-            if ($message->getConversationsIdConversations() === $this) {
-                $message->setConversationsIdConversations(null);
-            }
-        }
 
         return $this;
     }

@@ -4,9 +4,11 @@ namespace App\Entity;
 
 use App\Repository\BiensDynamicPropertyRepository;
 use Doctrine\ORM\Mapping as ORM;
-
+use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass=BiensDynamicPropertyRepository::class)
+ * @ApiResource()
  */
 class BiensDynamicProperty
 {

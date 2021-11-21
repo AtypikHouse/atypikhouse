@@ -5,10 +5,13 @@ namespace App\Entity;
 use App\Repository\DynamicPropertyRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=DynamicPropertyRepository::class)
+ * @ApiResource()
  */
 class DynamicProperty
 {
@@ -34,14 +37,9 @@ class DynamicProperty
      */
     private $bienType;
 
-    /**
-     * @ORM\OneToMany(targetEntity=BiensDynamicProperty::class, mappedBy="dynamicProperty_idDynamicProperty")
-     */
-    private $biensDynamicProperties;
 
     public function __construct()
     {
-        $this->biensDynamicProperties = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -85,33 +83,4 @@ class DynamicProperty
         return $this;
     }
 
-    /**
-     * @return Collection|BiensDynamicProperty[]
-     */
-    public function getBiensDynamicProperties(): Collection
-    {
-        return $this->biensDynamicProperties;
-    }
-
-    public function addBiensDynamicProperty(BiensDynamicProperty $biensDynamicProperty): self
-    {
-        if (!$this->biensDynamicProperties->contains($biensDynamicProperty)) {
-            $this->biensDynamicProperties[] = $biensDynamicProperty;
-            $biensDynamicProperty->setDynamicPropertyIdDynamicProperty($this);
-        }
-
-        return $this;
-    }
-
-    public function removeBiensDynamicProperty(BiensDynamicProperty $biensDynamicProperty): self
-    {
-        if ($this->biensDynamicProperties->removeElement($biensDynamicProperty)) {
-            // set the owning side to null (unless already changed)
-            if ($biensDynamicProperty->getDynamicPropertyIdDynamicProperty() === $this) {
-                $biensDynamicProperty->setDynamicPropertyIdDynamicProperty(null);
-            }
-        }
-
-        return $this;
-    }
 }

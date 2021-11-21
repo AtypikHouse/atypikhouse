@@ -5,10 +5,13 @@ namespace App\Entity;
 use App\Repository\ReservationsRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=ReservationsRepository::class)
+ * @ApiResource()
  */
 class Reservations
 {
@@ -75,14 +78,10 @@ class Reservations
      */
     private $Properties_idProperties;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Comments::class, mappedBy="reservations_idReservations")
-     */
-    private $comments;
 
     public function __construct()
     {
-        $this->comments = new ArrayCollection();
+
     }
 
     public function getId(): ?int
@@ -222,33 +221,5 @@ class Reservations
         return $this;
     }
 
-    /**
-     * @return Collection|Comments[]
-     */
-    public function getComments(): Collection
-    {
-        return $this->comments;
-    }
 
-    public function addComment(Comments $comment): self
-    {
-        if (!$this->comments->contains($comment)) {
-            $this->comments[] = $comment;
-            $comment->setReservationsIdReservations($this);
-        }
-
-        return $this;
-    }
-
-    public function removeComment(Comments $comment): self
-    {
-        if ($this->comments->removeElement($comment)) {
-            // set the owning side to null (unless already changed)
-            if ($comment->getReservationsIdReservations() === $this) {
-                $comment->setReservationsIdReservations(null);
-            }
-        }
-
-        return $this;
-    }
 }

@@ -5,10 +5,13 @@ namespace App\Entity;
 use App\Repository\PropertiesRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=PropertiesRepository::class)
+ * @ApiResource()
  */
 class Properties
 {
@@ -21,6 +24,12 @@ class Properties
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\Length(
+     *  min=2,
+     *  minMessage="comment.too_short",
+     *  max="150",
+     *  maxMessage="comment.too_long"
+     * )
      */
     private $name;
 
@@ -31,26 +40,57 @@ class Properties
 
     /**
      * @ORM\Column(type="integer")
+     * @Assert\Length(
+     *  min=1,
+     *  minMessage="comment.too_short",
+     *  max="10",
+     *  maxMessage="comment.too_long"
+     * )
      */
     private $rooms;
 
     /**
      * @ORM\Column(type="text")
+     * @Assert\Length(
+     *  min=5,
+     *  minMessage="comment.too_short",
+     *  max="1000",
+     *  maxMessage="comment.too_long"
+     * )
      */
     private $description;
 
     /**
      * @ORM\Column(type="float")
+     * @Assert\Length(
+     *  min=1,
+     *  minMessage="comment.too_short",
+     *  max="500",
+     *  maxMessage="comment.too_long"
+     * )
      */
     private $surface;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\Length(
+     *  min=5,
+     *  minMessage="comment.too_short",
+     *  max="1000",
+     *  maxMessage="comment.too_long"
+     * )
      */
+    /* Name of Country*/ 
     private $location;
 
     /**
      * @ORM\Column(type="integer")
+     * @Assert\Length(
+     *  min=1,
+     *  minMessage="comment.too_short",
+     *  max="10",
+     *  maxMessage="comment.too_long"
+     * )
      */
     private $hostingCapacity;
 
@@ -66,23 +106,26 @@ class Properties
 
     /**
      * @ORM\Column(type="float")
+     * @Assert\Length(
+     *  min=1,
+     *  minMessage="comment.too_short",
+     *  max="5",
+     *  maxMessage="comment.too_long"
+     * )
      */
     private $rate;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
+     * @Assert\Length(
+     *  min=1,
+     *  minMessage="comment.too_short",
+     *  max="500",
+     *  maxMessage="comment.too_long"
+     * )
      */
     private $reviews;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Reservations::class, mappedBy="Properties_idProperties")
-     */
-    private $reservations;
-
-    /**
-     * @ORM\OneToMany(targetEntity=Pictures::class, mappedBy="bien_idProperties")
-     */
-    private $pictures;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="properties")
@@ -99,34 +142,11 @@ class Properties
      */
     private $adress_idAdress;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Conversations::class, mappedBy="biens_idProperties")
-     */
-    private $conversations;
-
-    /**
-     * @ORM\OneToMany(targetEntity=PropertiesEquipements::class, mappedBy="biens_idProperties")
-     */
-    private $propertiesEquipements;
-
-    /**
-     * @ORM\OneToMany(targetEntity=Planning::class, mappedBy="properties_idProperties")
-     */
-    private $plannings;
-
-    /**
-     * @ORM\OneToMany(targetEntity=BiensDynamicProperty::class, mappedBy="bien_idProperties")
-     */
-    private $biensDynamicProperties;
+    
 
     public function __construct()
     {
-        $this->reservations = new ArrayCollection();
-        $this->pictures = new ArrayCollection();
-        $this->conversations = new ArrayCollection();
-        $this->propertiesEquipements = new ArrayCollection();
-        $this->plannings = new ArrayCollection();
-        $this->biensDynamicProperties = new ArrayCollection();
+
     }
 
     public function getId(): ?int
@@ -266,65 +286,6 @@ class Properties
         return $this;
     }
 
-    /**
-     * @return Collection|Reservations[]
-     */
-    public function getReservations(): Collection
-    {
-        return $this->reservations;
-    }
-
-    public function addReservation(Reservations $reservation): self
-    {
-        if (!$this->reservations->contains($reservation)) {
-            $this->reservations[] = $reservation;
-            $reservation->setPropertiesIdProperties($this);
-        }
-
-        return $this;
-    }
-
-    public function removeReservation(Reservations $reservation): self
-    {
-        if ($this->reservations->removeElement($reservation)) {
-            // set the owning side to null (unless already changed)
-            if ($reservation->getPropertiesIdProperties() === $this) {
-                $reservation->setPropertiesIdProperties(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Pictures[]
-     */
-    public function getPictures(): Collection
-    {
-        return $this->pictures;
-    }
-
-    public function addPicture(Pictures $picture): self
-    {
-        if (!$this->pictures->contains($picture)) {
-            $this->pictures[] = $picture;
-            $picture->setBienIdProperties($this);
-        }
-
-        return $this;
-    }
-
-    public function removePicture(Pictures $picture): self
-    {
-        if ($this->pictures->removeElement($picture)) {
-            // set the owning side to null (unless already changed)
-            if ($picture->getBienIdProperties() === $this) {
-                $picture->setBienIdProperties(null);
-            }
-        }
-
-        return $this;
-    }
 
     public function getOwnerIdUser(): ?User
     {
@@ -362,123 +323,4 @@ class Properties
         return $this;
     }
 
-    /**
-     * @return Collection|Conversations[]
-     */
-    public function getConversations(): Collection
-    {
-        return $this->conversations;
-    }
-
-    public function addConversation(Conversations $conversation): self
-    {
-        if (!$this->conversations->contains($conversation)) {
-            $this->conversations[] = $conversation;
-            $conversation->setBiensIdProperties($this);
-        }
-
-        return $this;
-    }
-
-    public function removeConversation(Conversations $conversation): self
-    {
-        if ($this->conversations->removeElement($conversation)) {
-            // set the owning side to null (unless already changed)
-            if ($conversation->getBiensIdProperties() === $this) {
-                $conversation->setBiensIdProperties(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|PropertiesEquipements[]
-     */
-    public function getPropertiesEquipements(): Collection
-    {
-        return $this->propertiesEquipements;
-    }
-
-    public function addPropertiesEquipement(PropertiesEquipements $propertiesEquipement): self
-    {
-        if (!$this->propertiesEquipements->contains($propertiesEquipement)) {
-            $this->propertiesEquipements[] = $propertiesEquipement;
-            $propertiesEquipement->setBiensIdProperties($this);
-        }
-
-        return $this;
-    }
-
-    public function removePropertiesEquipement(PropertiesEquipements $propertiesEquipement): self
-    {
-        if ($this->propertiesEquipements->removeElement($propertiesEquipement)) {
-            // set the owning side to null (unless already changed)
-            if ($propertiesEquipement->getBiensIdProperties() === $this) {
-                $propertiesEquipement->setBiensIdProperties(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Planning[]
-     */
-    public function getPlannings(): Collection
-    {
-        return $this->plannings;
-    }
-
-    public function addPlanning(Planning $planning): self
-    {
-        if (!$this->plannings->contains($planning)) {
-            $this->plannings[] = $planning;
-            $planning->setPropertiesIdProperties($this);
-        }
-
-        return $this;
-    }
-
-    public function removePlanning(Planning $planning): self
-    {
-        if ($this->plannings->removeElement($planning)) {
-            // set the owning side to null (unless already changed)
-            if ($planning->getPropertiesIdProperties() === $this) {
-                $planning->setPropertiesIdProperties(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|BiensDynamicProperty[]
-     */
-    public function getBiensDynamicProperties(): Collection
-    {
-        return $this->biensDynamicProperties;
-    }
-
-    public function addBiensDynamicProperty(BiensDynamicProperty $biensDynamicProperty): self
-    {
-        if (!$this->biensDynamicProperties->contains($biensDynamicProperty)) {
-            $this->biensDynamicProperties[] = $biensDynamicProperty;
-            $biensDynamicProperty->setBienIdProperties($this);
-        }
-
-        return $this;
-    }
-
-    public function removeBiensDynamicProperty(BiensDynamicProperty $biensDynamicProperty): self
-    {
-        if ($this->biensDynamicProperties->removeElement($biensDynamicProperty)) {
-            // set the owning side to null (unless already changed)
-            if ($biensDynamicProperty->getBienIdProperties() === $this) {
-                $biensDynamicProperty->setBienIdProperties(null);
-            }
-        }
-
-        return $this;
-    }
 }

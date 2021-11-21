@@ -3,10 +3,13 @@
 namespace App\Entity;
 
 use App\Repository\PlanningRepository;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=PlanningRepository::class)
+ * @ApiResource()
  */
 class Planning
 {
